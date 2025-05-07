@@ -1,0 +1,10 @@
+[package]
+name = "mdbook-grammar"
+version = "0.1.0"
+edition = "2024"
+authors = ["Philip Fan"]
+description = "A preprocessor for mdbook that adds grammar code block support"
+license = "MIT"
+
+[dependencies]
+mdbook = "0.4.49"

@@ -1,0 +1,8 @@
+[book]
+authors = ["Philip Fan"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Mdbook Grammar Preprocessor Sample"
+
+[preprocessor.grammar]
