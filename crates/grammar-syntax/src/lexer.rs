@@ -332,7 +332,7 @@ mod tests {
             "?<=", "?<!", "?",
         ] {
             let node = Lexer::new(format!("{symbol}abc123").as_str()).next();
-            assert!(node.kind().is_symbol());
+            assert!(node.kind().is_operator());
             assert_eq!(*node.span(), 0..symbol.len());
             assert_eq!(node.text(), symbol);
         }

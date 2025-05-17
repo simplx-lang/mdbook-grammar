@@ -1,6 +1,6 @@
 use crate::book::{Item, Page};
 use ecow::EcoString;
-use grammar_syntax::{SyntaxKind, SyntaxNode};
+use grammar_syntax::{SyntaxError, SyntaxKind, SyntaxNode};
 use html_escape::encode_safe;
 use std::collections::HashMap;
 
@@ -36,7 +36,7 @@ pub fn find_rules(pages: &Vec<Page>) -> Rules {
     rules
 }
 
-pub(crate) fn parse_code(rules: &Rules, code: &SyntaxNode) -> String {
+pub fn parse_code(rules: &Rules, code: &SyntaxNode) -> String {
     debug_assert_eq!(code.kind(), SyntaxKind::Root);
 
     let content = code
@@ -51,7 +51,7 @@ pub(crate) fn parse_code(rules: &Rules, code: &SyntaxNode) -> String {
         .collect::<Vec<_>>()
         .join("");
 
-    format!("<pre><code class=\"hljs\">{content}</code></pre>")
+    format!("<pre><code class=\"syntax\">{content}</code></pre>")
 }
 
 fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
@@ -65,7 +65,7 @@ fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
         .text();
 
     format!(
-        "<span rule=\"{name}\">\
+        "<span class=\"syntax-rule\" rule=\"{name}\">\
         <a name=\"#{name}\"></a>\
         {content}</span>",
         name = rule_hash(name),
@@ -76,15 +76,15 @@ fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
 pub fn wrap(rules: &Rules, node: &SyntaxNode) -> String {
     let cls = match node.kind() {
         SyntaxKind::Error => return wrap_error(node),
-        SyntaxKind::Comment => "hljs-comment",
+        SyntaxKind::Comment => "comment",
         SyntaxKind::Whitespace => return node.text().into(),
         SyntaxKind::Identifier => return wrap_identifier(rules, node),
-        SyntaxKind::String => "hljs-string",
-        SyntaxKind::Integer => "hljs-number",
-        SyntaxKind::Meta => "hljs-meta",
-        SyntaxKind::Operation => "hljs-quote",
-        SyntaxKind::If => "hljs-keyword",
-        k if k.is_symbol() => return node.text().into(),
+        SyntaxKind::String => "string",
+        SyntaxKind::Integer => "integer",
+        SyntaxKind::Meta => "meta",
+        SyntaxKind::Operation => "action",
+        SyntaxKind::If => "keyword",
+        k if k.is_operator() => "operator",
         _ => {
             return node
                 .children()
@@ -94,11 +94,7 @@ pub fn wrap(rules: &Rules, node: &SyntaxNode) -> String {
         }
     };
 
-    let text = node.text();
-    format!(
-        "<span class=\"{cls}\">{text}</span>",
-        text = encode_safe(text)
-    )
+    wrap_node_raw(node.text(), cls)
 }
 
 fn wrap_identifier(rules: &Rules, rule: &SyntaxNode) -> String {
@@ -107,57 +103,58 @@ fn wrap_identifier(rules: &Rules, rule: &SyntaxNode) -> String {
     let name = rule.text();
     if let Some(hrefs) = rules.get(name) {
         if hrefs.len() > 1 {
-            let message = format!(
-                "Found definitions for rule {name} in these sources:\n{hrefs}",
-                hrefs = hrefs.join("\n")
-            );
-            format!(
-                "<span class=\"hljs-deletion hljs-strong hljs-emphasis\">\
-                <a onclick=\"alert('{message}')\">\
-                {name}</a></span>",
-                message = message.escape_default(),
-            )
+            let message = format!("found multiple definitions for rule `{name}`");
+            wrap_error_raw(name, &SyntaxError::new(message))
         } else {
             format!(
-                "<a href=\"{href}\">\
-                <span class=\"hljs-name hljs-strong\">\
-                {name}</span></a>",
+                "<a class=\"syntax-link\" href=\"{href}\">{content}</a>",
                 href = hrefs[0],
+                content = wrap_node_raw(name, "identifier"),
             )
         }
     } else {
-        format!(
-            "<span class=\"hljs-deletion hljs-strong hljs-emphasis\">\
-            <a onclick=\"alert('Error: rule {name} undefined')\">\
-            {name}\
-            </a></span>"
-        )
+        let message = format!("rule `{name}` does not exist");
+        wrap_error_raw(name, &SyntaxError::new(message))
     }
 }
 
 fn wrap_error(error: &SyntaxNode) -> String {
     debug_assert_eq!(error.kind(), SyntaxKind::Error);
+    wrap_error_raw(error.text(), error.as_error().unwrap())
+}
 
+fn wrap_node_raw(code: &str, cls: &str) -> String {
+    format!(
+        "<span class=\"syntax-{cls}\">{text}</span>",
+        cls = cls,
+        text = encode_safe(code)
+    )
+}
+
+fn wrap_error_raw(code: &str, error: &SyntaxError) -> String {
     let text = {
-        let text = error.text();
+        let text = code;
         if text.trim().is_empty() {
-            &"[error]".into()
+            "[error]"
         } else {
             text
         }
     };
-    let error = error.as_error().unwrap();
-    let mut message = error.message.clone();
-    for hint in &error.hints {
-        message.push_str(&format!("\n    {hint}"));
-    }
+
+    let message = error.message.escape_default();
+    let hints = error
+        .hints
+        .iter()
+        .map(|hint| format!("\"{}\"", hint.escape_default()))
+        .collect::<Vec<_>>()
+        .join(",");
 
     format!(
-        "<span class=\"hljs-deletion\">\
-        <a onclick=\"alert('Error: {message}')\">\
-        {code}</a></span>",
-        message = message.escape_default(),
-        code = encode_safe(text),
+        "<span \
+             class=\"syntax-error\" \
+             message=\"{message}\" \
+             hints=\"[{hints}]\"\
+         >{text}</span>"
     )
 }
 

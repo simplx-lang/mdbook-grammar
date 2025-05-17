@@ -115,7 +115,7 @@ impl SyntaxKind {
         )
     }
 
-    pub fn is_symbol(self) -> bool {
+    pub fn is_operator(self) -> bool {
         matches!(
             self,
             SyntaxKind::Colon
