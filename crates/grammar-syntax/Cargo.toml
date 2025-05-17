@@ -1,0 +1,15 @@
+[package]
+name = "grammar-syntax"
+description = "Syntax parser for grammar code"
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+readme = { workspace = true }
+
+[dependencies]
+unscanny = { workspace = true }
+ecow = { workspace = true }
