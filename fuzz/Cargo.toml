@@ -1,0 +1,33 @@
+[package]
+name = "mdbook-grammar-fuzz"
+version = { workspace = true }
+rust-version = { workspace = true }
+edition = { workspace = true }
+publish = false
+
+[features]
+default = ["arbitrary"]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+grammar-syntax = { workspace = true }
+grammar-runner = { workspace = true }
+mdbook = { workspace = true }
+libfuzzer-sys = "0.4.9"
+arbitrary = { version = "1", optional = true, features = ["derive"] }
+
+[[bin]]
+name = "parse"
+path = "fuzz_targets/parse.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "run"
+path = "fuzz_targets/run.rs"
+test = false
+doc = false
+bench = false
