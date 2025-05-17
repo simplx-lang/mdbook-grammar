@@ -42,7 +42,7 @@ pub(crate) fn parse_code(rules: &Rules, code: &SyntaxNode) -> String {
     let content = code
         .children()
         .map(|node| {
-            if node.kind() == SyntaxKind::Rule {
+            if node.kind() == SyntaxKind::Rule && !node.erroneous() {
                 parse_rule(rules, node)
             } else {
                 wrap(rules, node)
@@ -56,6 +56,7 @@ pub(crate) fn parse_code(rules: &Rules, code: &SyntaxNode) -> String {
 
 fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
     debug_assert_eq!(rule.kind(), SyntaxKind::Rule);
+    debug_assert!(!rule.erroneous());
 
     let name = rule
         .children()
