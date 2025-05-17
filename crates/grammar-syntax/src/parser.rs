@@ -6,7 +6,13 @@ use std::ops::{Index, IndexMut};
 /// Parse a grammar rule from the input string.
 pub fn parse(input: &str) -> SyntaxNode {
     let mut p = Parser::new(input);
-    while !p.lexer.done() {
+    loop {
+        p.eat_while(SyntaxKind::is_trivia);
+
+        if p.lexer.done() {
+            break;
+        }
+
         rule(&mut p);
     }
 
@@ -972,8 +978,10 @@ mod tests {
     fn test_mixed_rules() {
         test_node! {
             Root => {
+                Whitespace,
                 Rule => {
                     Identifier,
+                    Whitespace,
                     Colon,
                     Definition => {
                         Repeating => {
@@ -990,6 +998,7 @@ mod tests {
                             BraceIndicator => {
                                 LeftBrace,
                                 Integer,
+                                Whitespace,
                                 Comma,
                                 Integer,
                                 RightBrace,
@@ -998,6 +1007,7 @@ mod tests {
                         Bar,
                         Range => {
                             String,
+                            Whitespace,
                             Dots,
                             String,
                         }
@@ -1006,6 +1016,7 @@ mod tests {
                     Action => { Arrow, Operation },
                     SemiColon,
                 },
+                Whitespace,
                 Rule => {
                     Identifier,
                     Comment => "/* comment */",
@@ -1013,6 +1024,7 @@ mod tests {
                     Definition => {
                         Group => {
                             LeftParen,
+                            Whitespace,
                             Identifier,
                             Bar,
                             Looking => {
@@ -1034,12 +1046,14 @@ mod tests {
                                 },
                                 RightParen,
                             },
+                            Whitespace,
                             RightParen
                         },
                     },
                     Action => { If, Operation },
                     SemiColon,
-                }
+                },
+                Whitespace
             }
         }
     }
