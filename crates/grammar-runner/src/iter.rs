@@ -11,7 +11,7 @@ pub trait RecursiveIterable {
     fn recur_iter_mut(&mut self) -> impl Iterator<Item=&mut Self::Item>;
 }
 
-pub trait Tree {
+pub trait Tree: Sized {
     fn children(&self) -> Vec<&Self>;
     fn children_mut(&mut self) -> Vec<&mut Self>;
 }
@@ -91,28 +91,13 @@ impl<T: Tree> RecursiveIterable for Vec<T> {
 
 impl Tree for Chapter {
     fn children(&self) -> Vec<&Self> {
-        self.sub_items
-            .iter()
-            .filter_map(|item| {
-                if let BookItem::Chapter(chapter) = item {
-                    Some(chapter)
-                } else {
-                    None
-                }
-            })
-            .collect()
+        self.sub_items.iter().filter_map(item_to_chapter).collect()
     }
 
     fn children_mut(&mut self) -> Vec<&mut Self> {
         self.sub_items
             .iter_mut()
-            .filter_map(|item| {
-                if let BookItem::Chapter(chapter) = item {
-                    Some(chapter)
-                } else {
-                    None
-                }
-            })
+            .filter_map(item_to_chapter_mut)
             .collect()
     }
 }
@@ -121,19 +106,13 @@ impl RecursiveIterable for BookItem {
     type Item = Chapter;
 
     fn recur_iter(&self) -> impl Iterator<Item=&Self::Item> {
-        if let BookItem::Chapter(chapter) = self {
-            TreeIter::new(vec![chapter])
-        } else {
-            TreeIter::empty()
-        }
+        item_to_chapter(self).map_or_else(TreeIter::empty, |chapter| TreeIter::new(vec![chapter]))
     }
 
     fn recur_iter_mut(&mut self) -> impl Iterator<Item=&mut Self::Item> {
-        if let BookItem::Chapter(chapter) = self {
+        item_to_chapter_mut(self).map_or_else(TreeIterMut::empty, |chapter| {
             TreeIterMut::new(vec![chapter])
-        } else {
-            TreeIterMut::empty()
-        }
+        })
     }
 }
 
@@ -141,27 +120,16 @@ impl RecursiveIterable for Book {
     type Item = Chapter;
 
     fn recur_iter(&self) -> impl Iterator<Item=&Self::Item> {
-        let chapters = self.sections.iter().filter_map(|item| {
-            if let BookItem::Chapter(chapter) = item {
-                Some(chapter)
-            } else {
-                None
-            }
-        });
-
-        TreeIter::new(chapters.collect())
+        TreeIter::new(self.sections.iter().filter_map(item_to_chapter).collect())
     }
 
     fn recur_iter_mut(&mut self) -> impl Iterator<Item=&mut Self::Item> {
-        let chapters = self.sections.iter_mut().filter_map(|item| {
-            if let BookItem::Chapter(chapter) = item {
-                Some(chapter)
-            } else {
-                None
-            }
-        });
-
-        TreeIterMut::new(chapters.collect())
+        TreeIterMut::new(
+            self.sections
+                .iter_mut()
+                .filter_map(item_to_chapter_mut)
+                .collect(),
+        )
     }
 }
 
@@ -173,4 +141,24 @@ impl Tree for SyntaxNode {
     fn children_mut(&mut self) -> Vec<&mut Self> {
         unimplemented!()
     }
+}
+
+#[inline]
+fn item_to_chapter(item: &BookItem) -> Option<&Chapter> {
+    if let BookItem::Chapter(chapter) = item {
+        if !chapter.path.as_ref()?.to_str()?.is_empty() {
+            return Some(chapter);
+        }
+    }
+    None
+}
+
+#[inline]
+fn item_to_chapter_mut(item: &mut BookItem) -> Option<&mut Chapter> {
+    if let BookItem::Chapter(chapter) = item {
+        if !chapter.path.as_ref()?.to_str()?.is_empty() {
+            return Some(chapter);
+        }
+    }
+    None
 }
