@@ -4,7 +4,7 @@ mod node;
 mod parser;
 
 pub use self::{
-    kind::SyntaxKind,
-    node::{SyntaxError, SyntaxNode},
-    parser::parse,
+  kind::SyntaxKind,
+  node::{SyntaxError, SyntaxNode},
+  parser::parse,
 };
