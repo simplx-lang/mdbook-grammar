@@ -1,8 +1,8 @@
-use grammar_syntax::SyntaxNode;
 use mdbook::{
   BookItem,
   book::{Book, Chapter},
 };
+use mdbook_grammar_syntax::SyntaxNode;
 use std::mem::transmute;
 
 pub trait RecursiveIterable {

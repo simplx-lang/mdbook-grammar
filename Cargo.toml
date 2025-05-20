@@ -14,8 +14,8 @@ repository = "https://github.com/simplx-lang/mdbook-grammar"
 readme = "README.md"
 
 [workspace.dependencies]
-grammar-syntax = { path = "crates/grammar-syntax", version = "0.1.0" }
-grammar-runner = { path = "crates/grammar-runner", version = "0.1.0" }
+mdbook-grammar-syntax = { path = "crates/mdbook-grammar-syntax", version = "0.1.0" }
+mdbook-grammar-runner = { path = "crates/mdbook-grammar-runner", version = "0.1.0" }
 ecow = "0.2.5"
 html-escape = "0.2.13"
 mdbook = "0.4.49"
@@ -36,6 +36,6 @@ repository = { workspace = true }
 readme = { workspace = true }
 
 [dependencies]
-grammar-runner = { workspace = true }
+mdbook-grammar-runner = { workspace = true }
 mdbook = { workspace = true }
 serde_json = { workspace = true }

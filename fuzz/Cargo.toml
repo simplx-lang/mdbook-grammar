@@ -12,8 +12,8 @@ default = ["arbitrary"]
 cargo-fuzz = true
 
 [dependencies]
-grammar-syntax = { workspace = true }
-grammar-runner = { workspace = true }
+mdbook-grammar-syntax = { workspace = true }
+mdbook-grammar-runner = { workspace = true }
 mdbook = { workspace = true }
 libfuzzer-sys = "0.4.9"
 arbitrary = { version = "1", optional = true, features = ["derive"] }

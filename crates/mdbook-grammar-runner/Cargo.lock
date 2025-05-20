@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "grammar-syntax"
+name = "mdbook-grammar-runner"
 version = "0.1.0"

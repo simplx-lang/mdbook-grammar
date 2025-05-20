@@ -1,5 +1,5 @@
 [package]
-name = "grammar-syntax"
+name = "mdbook-grammar-syntax"
 description = "Syntax parser for grammar code"
 version = { workspace = true }
 rust-version = { workspace = true }

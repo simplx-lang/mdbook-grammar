@@ -1,5 +1,5 @@
 [package]
-name = "grammar-runner"
+name = "mdbook-grammar-runner"
 description = "A runner for grammar code"
 version = { workspace = true }
 rust-version = { workspace = true }
@@ -11,7 +11,7 @@ repository = { workspace = true }
 readme = { workspace = true }
 
 [dependencies]
-grammar-syntax = { workspace = true }
+mdbook-grammar-syntax = { workspace = true }
 mdbook = { workspace = true }
 unscanny = { workspace = true }
 ecow = { workspace = true }

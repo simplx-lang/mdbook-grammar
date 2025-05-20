@@ -1,7 +1,7 @@
 use crate::book::{Item, Page};
 use ecow::EcoString;
-use grammar_syntax::{SyntaxError, SyntaxKind, SyntaxNode};
 use html_escape::encode_safe;
+use mdbook_grammar_syntax::{SyntaxError, SyntaxKind, SyntaxNode};
 use std::collections::HashMap;
 
 type Rules = HashMap<EcoString, Vec<EcoString>>;

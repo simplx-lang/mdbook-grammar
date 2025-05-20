@@ -687,25 +687,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "grammar-runner"
-version = "0.1.0"
-dependencies = [
- "ecow",
- "grammar-syntax",
- "html-escape",
- "mdbook",
- "unscanny",
-]
-
-[[package]]
-name = "grammar-syntax"
-version = "0.1.0"
-dependencies = [
- "ecow",
- "unscanny",
-]
-
-[[package]]
 name = "h2"
 version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1266,8 +1247,8 @@ dependencies = [
 name = "mdbook-grammar"
 version = "0.1.0"
 dependencies = [
- "grammar-runner",
  "mdbook",
+ "mdbook-grammar-runner",
  "serde_json",
 ]
 
@@ -1276,10 +1257,29 @@ name = "mdbook-grammar-fuzz"
 version = "0.1.0"
 dependencies = [
  "arbitrary",
- "grammar-runner",
- "grammar-syntax",
  "libfuzzer-sys",
  "mdbook",
+ "mdbook-grammar-runner",
+ "mdbook-grammar-syntax",
+]
+
+[[package]]
+name = "mdbook-grammar-runner"
+version = "0.1.0"
+dependencies = [
+ "ecow",
+ "html-escape",
+ "mdbook",
+ "mdbook-grammar-syntax",
+ "unscanny",
+]
+
+[[package]]
+name = "mdbook-grammar-syntax"
+version = "0.1.0"
+dependencies = [
+ "ecow",
+ "unscanny",
 ]
 
 [[package]]

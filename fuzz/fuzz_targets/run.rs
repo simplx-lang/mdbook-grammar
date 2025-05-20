@@ -1,12 +1,12 @@
 #![no_main]
 
 use arbitrary::Arbitrary;
-use grammar_runner::run;
 use libfuzzer_sys::fuzz_target;
 use mdbook::{
   BookItem,
   book::{Book, Chapter},
 };
+use mdbook_grammar_runner::run;
 use std::path::PathBuf;
 
 #[derive(Debug)]

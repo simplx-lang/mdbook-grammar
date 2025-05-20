@@ -3,8 +3,8 @@ use crate::{
   iter::RecursiveIterable,
 };
 use ecow::EcoString;
-use grammar_syntax::{parse, SyntaxNode};
 use mdbook::book::Book;
+use mdbook_grammar_syntax::{SyntaxNode, parse};
 use unscanny::Scanner;
 
 pub fn run(book: &mut Book) {
@@ -21,14 +21,14 @@ pub fn run(book: &mut Book) {
 
   let mut parsed_pages = pages.iter().map(|page| {
     page
-        .items
-        .iter()
-        .map(|item| match item {
-          | Item::Text(text) => text.clone(),
-          | Item::Code(code) => parse_code(&rules, code),
-        })
-        .collect::<Vec<_>>()
-        .join("")
+      .items
+      .iter()
+      .map(|item| match item {
+        | Item::Text(text) => text.clone(),
+        | Item::Code(code) => parse_code(&rules, code),
+      })
+      .collect::<Vec<_>>()
+      .join("")
   });
 
   for chapter in book.recur_iter_mut() {
