@@ -73,7 +73,7 @@ fn item(p: &mut Parser, wrapper: Option<(Marker, SyntaxKind)>) -> bool {
     },
 
     | SyntaxKind::LeftParen => {
-      let kind = if p.eat_if(&SyntaxKind::is_looking) {
+      let kind = if p.eat_if(SyntaxKind::is_looking) {
         SyntaxKind::Looking
       } else {
         SyntaxKind::Group
@@ -295,7 +295,7 @@ impl Pattern for SyntaxKind {
 
 impl<const N: usize> Pattern for [SyntaxKind; N] {
   fn matches(&self, kind: SyntaxKind) -> bool {
-    self.iter().any(|k| *k == kind)
+    self.contains(&kind)
   }
 
   fn name(&self) -> EcoString {
@@ -421,7 +421,7 @@ mod tests {
       | SyntaxKind::LookAheadNeg => "?!",
       | SyntaxKind::LookBehindPos => "?<=",
       | SyntaxKind::LookBehindNeg => "?<!",
-      | _ => return "",
+      | _ => "",
     }
   }
 
