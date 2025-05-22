@@ -17,21 +17,21 @@ repos:
   hooks:
   - id: cargo-check
     name: cargo check
-    entry: cargo check
+    entry: cargo +stable check
     language: system
     pass_filenames: false
   - id: cargo-clippy
     name: cargo clippy
-    entry: cargo clippy --all-targets --all-features -- -D warnings
+    entry: cargo +nightly clippy -- -D warnings
     language: system
     pass_filenames: false
   - id: cargo-fmt
     name: cargo fmt
-    entry: cargo fmt --check --
+    entry: cargo +nightly fmt --check --
     language: system
     types: [ rust ]
   - id: cargo-test
     name: cargo test
-    entry: cargo test --workspace
+    entry: cargo +stable test --workspace
     language: system
     pass_filenames: false

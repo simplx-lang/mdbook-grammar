@@ -77,7 +77,7 @@ fn parse_content(content: String) -> Vec<Item> {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use std::assert_matches::assert_matches;
+  use assert_matches::assert_matches;
 
   #[test]
   fn test_parse_content() {

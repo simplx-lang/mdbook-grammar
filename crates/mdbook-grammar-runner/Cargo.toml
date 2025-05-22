@@ -16,3 +16,4 @@ mdbook = { workspace = true }
 unscanny = { workspace = true }
 ecow = { workspace = true }
 html-escape = { workspace = true }
+assert_matches = { workspace = true }
