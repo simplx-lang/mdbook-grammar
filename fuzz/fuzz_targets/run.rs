@@ -36,5 +36,5 @@ impl MyBook {
 }
 
 fuzz_target!(|book: MyBook| {
-    run(&mut book.into_book());
+    run(&mut book.into_book(), "/");
 });

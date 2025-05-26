@@ -1,4 +1,4 @@
-use mdbook::preprocess::CmdPreprocessor;
+use mdbook::preprocess::{CmdPreprocessor, PreprocessorContext};
 use mdbook_grammar_runner::run;
 
 fn main() {
@@ -13,9 +13,17 @@ fn main() {
         | None => {},
     }
 
-    let (_, mut book) = CmdPreprocessor::parse_input(std::io::stdin()).unwrap();
-
-    run(&mut book);
-
+    let (context, mut book) =
+        CmdPreprocessor::parse_input(std::io::stdin()).unwrap();
+    run(&mut book, get_site_url(&context).unwrap_or("/"));
     serde_json::to_writer(std::io::stdout(), &book).unwrap();
+}
+
+fn get_site_url(context: &PreprocessorContext) -> Option<&str> {
+    context
+        .config
+        .get("output")?
+        .get("html")?
+        .get("site-url")?
+        .as_str()
 }

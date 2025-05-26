@@ -7,7 +7,7 @@ use mdbook::book::Book;
 use mdbook_grammar_syntax::{SyntaxNode, parse};
 use unscanny::Scanner;
 
-pub fn run(book: &mut Book) {
+pub fn run(book: &mut Book, root: &str) {
     let mut pages: Vec<Page> = Vec::new();
 
     for chapter in book.recur_iter() {
@@ -17,7 +17,7 @@ pub fn run(book: &mut Book) {
         });
     }
 
-    let rules = find_rules(&pages);
+    let rules = find_rules(&pages, root);
 
     let mut parsed_pages = pages.iter().map(|page| {
         page.items

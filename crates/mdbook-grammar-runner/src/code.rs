@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 type Rules = HashMap<EcoString, Vec<EcoString>>;
 
-pub fn find_rules(pages: &Vec<Page>) -> Rules {
+pub fn find_rules(pages: &Vec<Page>, root: &str) -> Rules {
     let mut rules: Rules = HashMap::new();
 
     for page in pages {
@@ -19,7 +19,7 @@ pub fn find_rules(pages: &Vec<Page>) -> Rules {
                             if sub.kind() == SyntaxKind::Identifier {
                                 let name = sub.text();
                                 let href = format!(
-                                    "{}#{}",
+                                    "{root}{}#{}",
                                     page.href,
                                     rule_hash(name)
                                 );
