@@ -4,7 +4,7 @@ use html_escape::encode_safe;
 use mdbook_grammar_syntax::{SyntaxError, SyntaxKind, SyntaxNode};
 use std::collections::HashMap;
 
-type Rules = HashMap<EcoString, Vec<EcoString>>;
+type Rules = HashMap<EcoString, EcoString>;
 
 pub fn find_rules(pages: &Vec<Page>, root: &str) -> Rules {
     let mut rules: Rules = HashMap::new();
@@ -23,12 +23,7 @@ pub fn find_rules(pages: &Vec<Page>, root: &str) -> Rules {
                                     page.href,
                                     rule_hash(name)
                                 );
-                                if let Some(v) = rules.get_mut(name) {
-                                    v.push(href.into());
-                                } else {
-                                    rules
-                                        .insert(name.into(), vec![href.into()]);
-                                }
+                                rules.insert(name.into(), href.into());
                                 break;
                             }
                         }
@@ -105,21 +100,13 @@ fn wrap_identifier(rules: &Rules, rule: &SyntaxNode) -> String {
     debug_assert_eq!(rule.kind(), SyntaxKind::Identifier);
 
     let name = rule.text();
-    if let Some(hrefs) = rules.get(name) {
-        if hrefs.len() > 1 {
-            let message =
-                format!("found multiple definitions for rule `{name}`");
-            wrap_error_raw(name, &SyntaxError::new(message))
-        } else {
-            format!(
-                "<a class=\"syntax-link\" href=\"{href}\">{content}</a>",
-                href = hrefs[0],
-                content = wrap_node_raw(name, "identifier"),
-            )
-        }
+    if let Some(href) = rules.get(name) {
+        format!(
+            "<a class=\"syntax-link\" href=\"{href}\">{content}</a>",
+            content = wrap_node_raw(name, "identifier"),
+        )
     } else {
-        let message = format!("rule `{name}` does not exist");
-        wrap_error_raw(name, &SyntaxError::new(message))
+        wrap_node_raw(name, "identifier")
     }
 }
 
