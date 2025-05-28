@@ -66,7 +66,7 @@ fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
 
     format!(
         "<span class=\"syntax-rule\" rule=\"{name}\"><a \
-         name=\"#{name}\"></a>{content}</span>",
+         name=\"{name}\"></a>{content}</span>",
         name = rule_hash(name),
         content = wrap(rules, rule)
     )
@@ -143,7 +143,8 @@ fn wrap_error_raw(code: &str, error: &SyntaxError) -> String {
 
     format!(
         "<span class=\"syntax-error\" message=\"{message}\" \
-         hints=\"[{hints}]\">{text}</span>"
+         hints=\"[{hints}]\">{text}</span>",
+        hints = encode_safe(&hints),
     )
 }
 
