@@ -1,6 +1,7 @@
 use crate::{
     code::{find_rules, parse_code},
     iter::RecursiveIterable,
+    mode::parse_mode,
 };
 use ecow::EcoString;
 use mdbook::book::Book;
@@ -23,7 +24,7 @@ pub fn run(book: &mut Book, root: &str) {
         page.items
             .iter()
             .map(|item| match item {
-                | Item::Text(text) => text.clone(),
+                | Item::Text(text) => parse_mode(text),
                 | Item::Code(code) => parse_code(&rules, code),
             })
             .collect::<Vec<_>>()
