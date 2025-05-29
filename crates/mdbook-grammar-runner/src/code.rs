@@ -12,21 +12,24 @@ pub fn find_rules(pages: &Vec<Page>, root: &str) -> Rules {
     for page in pages {
         for item in &page.items {
             if let Item::Code(code) = item {
+                // Find rule definitions in code blocks.
                 debug_assert_eq!(code.kind(), SyntaxKind::Root);
+
                 for node in code.children() {
                     if node.kind() == SyntaxKind::Rule && !node.erroneous() {
-                        for sub in node.children() {
-                            if sub.kind() == SyntaxKind::Identifier {
-                                let name = sub.text();
-                                let href = format!(
-                                    "{root}{}#{}",
-                                    page.href,
-                                    rule_hash(name)
-                                );
-                                rules.insert(name.into(), href.into());
-                                break;
-                            }
-                        }
+                        // Found a rule definition.
+                        let Some(name) = node
+                            .children()
+                            .find(|n| n.kind() == SyntaxKind::Identifier)
+                            .map(SyntaxNode::text)
+                            .filter(|name| !name.starts_with('_'))
+                        else {
+                            continue;
+                        };
+
+                        let href =
+                            format!("{root}{}#{}", page.href, rule_hash(name));
+                        rules.insert(name.into(), href.into());
                     }
                 }
             }
@@ -64,12 +67,17 @@ fn parse_rule(rules: &Rules, rule: &SyntaxNode) -> String {
         .unwrap()
         .text();
 
-    format!(
-        "<span class=\"syntax-rule\" rule=\"{name}\"><a \
-         name=\"{name}\"></a>{content}</span>",
-        name = rule_hash(name),
-        content = wrap(rules, rule)
-    )
+    if name.starts_with('_') {
+        // Ignored rule.
+        wrap(rules, rule)
+    } else {
+        format!(
+            "<span class=\"syntax-rule\" rule=\"{name}\"><a \
+             name=\"{name}\"></a>{content}</span>",
+            name = rule_hash(name),
+            content = wrap(rules, rule)
+        )
+    }
 }
 
 pub fn wrap(rules: &Rules, node: &SyntaxNode) -> String {
