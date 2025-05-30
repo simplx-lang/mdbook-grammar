@@ -118,7 +118,7 @@ fn item(p: &mut Parser, wrapper: Option<(Marker, SyntaxKind)>) -> bool {
             // parse the range
             p.expect(SyntaxKind::Integer);
             if p.eat_if(SyntaxKind::Comma) {
-                p.expect(SyntaxKind::Integer);
+                p.eat_if(SyntaxKind::Integer);
             }
             p.expect(SyntaxKind::RightBrace);
             p.hint("consider closing the range with `}`");
