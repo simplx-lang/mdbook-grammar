@@ -73,6 +73,13 @@ impl Lexer<'_> {
                 return self.action(start, SyntaxKind::Arrow);
             },
 
+            | Some('[') => {
+                if let Some(node) = self.param(start) {
+                    return node;
+                }
+                SyntaxKind::Error
+            },
+
             | Some(':') => SyntaxKind::Colon,
             | Some(';') => SyntaxKind::SemiColon,
             | Some('(') => SyntaxKind::LeftParen,
@@ -213,6 +220,39 @@ impl Lexer<'_> {
                 cursor..self.s.cursor(),
             ),
         ])
+    }
+
+    fn param(&mut self, start: usize) -> Option<SyntaxNode> {
+        let mut nodes = Vec::with_capacity(3);
+
+        let cursor = self.s.cursor();
+        nodes.push(SyntaxNode::leaf(
+            SyntaxKind::LeftBracket,
+            "[",
+            start..cursor,
+        ));
+
+        let param = self.s.eat_until(']');
+        nodes.push(SyntaxNode::leaf(
+            SyntaxKind::Action,
+            param,
+            cursor..self.s.cursor(),
+        ));
+
+        let cursor = self.s.cursor();
+        if !self.s.eat_if(']') {
+            self.error("unclosed parameter");
+            self.hint("consider closing the parameter with `]`");
+            return None;
+        }
+
+        nodes.push(SyntaxNode::leaf(
+            SyntaxKind::RightBracket,
+            "]",
+            cursor..self.s.cursor(),
+        ));
+
+        Some(SyntaxNode::inner(SyntaxKind::Param, nodes))
     }
 }
 

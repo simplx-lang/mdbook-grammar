@@ -31,6 +31,10 @@ pub enum SyntaxKind {
     SemiColon,
     /// `->`
     Arrow,
+    /// `[`
+    LeftBracket,
+    /// `]`
+    RightBracket,
     /// `(`
     LeftParen,
     /// `)`
@@ -66,11 +70,11 @@ pub enum SyntaxKind {
 
     /// a grammar rule
     Rule,
+    /// the param of a rule
+    Param,
     /// the definition of a rule
     Definition,
 
-    /// an action expression
-    Action,
     /// a group expression
     Group,
     /// a converse expression
@@ -83,6 +87,10 @@ pub enum SyntaxKind {
     BraceIndicator,
     /// a lookahead or lookbehind expression
     Looking,
+    /// an action expression
+    Action,
+    /// rule reference with argument
+    Reference,
 }
 
 impl SyntaxKind {
@@ -159,6 +167,8 @@ impl SyntaxKind {
             | SyntaxKind::Colon => "`:`",
             | SyntaxKind::SemiColon => "`;`",
             | SyntaxKind::Arrow => "`->`",
+            | SyntaxKind::LeftBracket => "`[`",
+            | SyntaxKind::RightBracket => "`]`",
             | SyntaxKind::LeftParen => "`(`",
             | SyntaxKind::RightParen => "`)`",
             | SyntaxKind::LeftBrace => "`{`",
@@ -176,14 +186,16 @@ impl SyntaxKind {
             | SyntaxKind::LookBehindPos => "`?<=`",
             | SyntaxKind::LookBehindNeg => "`?<!`",
             | SyntaxKind::Rule => "rule",
+            | SyntaxKind::Param => "param",
             | SyntaxKind::Definition => "definition",
-            | SyntaxKind::Action => "action",
             | SyntaxKind::Group => "group",
             | SyntaxKind::Converse => "converse",
             | SyntaxKind::Range => "range",
             | SyntaxKind::Repeating => "repeating",
             | SyntaxKind::BraceIndicator => "brace_indicator",
             | SyntaxKind::Looking => "looking",
+            | SyntaxKind::Action => "action",
+            | SyntaxKind::Reference => "reference",
         }
     }
 }

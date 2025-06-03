@@ -22,8 +22,8 @@ pub fn parse(input: &str) -> SyntaxNode {
 fn rule(p: &mut Parser<'_>) {
     let start = p.marker();
 
-    p.expect([SyntaxKind::Identifier, SyntaxKind::If]);
-    p.convert(SyntaxKind::Identifier);
+    p.expect(SyntaxKind::Identifier);
+    p.eat_if(SyntaxKind::Param);
     p.expect(SyntaxKind::Colon);
 
     let marker = p.marker();
@@ -52,10 +52,15 @@ fn item(p: &mut Parser, wrapper: Option<(Marker, SyntaxKind)>) -> bool {
 
     match p.eat() {
         | SyntaxKind::Meta
-        | SyntaxKind::Identifier
         | SyntaxKind::Dot
         | SyntaxKind::Bar
         | SyntaxKind::Action => {},
+
+        | SyntaxKind::Identifier => {
+            if p.eat_if(SyntaxKind::Param) {
+                p.wrap(start, SyntaxKind::Reference);
+            }
+        },
 
         | SyntaxKind::String => {
             if p.eat_if(SyntaxKind::Dots) {
@@ -184,12 +189,6 @@ impl Parser<'_> {
     fn eat_while(&mut self, pattern: impl Pattern) {
         while pattern.matches(self.eat()) {}
         self.uneat();
-    }
-
-    /// Convert the last node to the given kind.
-    fn convert(&mut self, kind: SyntaxKind) {
-        let node = self.nodes.last_mut().unwrap();
-        node.convert_kind(kind);
     }
 
     /// The kind of the last token.
@@ -404,6 +403,8 @@ mod tests {
             | SyntaxKind::Colon => ":",
             | SyntaxKind::SemiColon => ";",
             | SyntaxKind::Arrow => "->",
+            | SyntaxKind::LeftBracket => "[",
+            | SyntaxKind::RightBracket => "]",
             | SyntaxKind::LeftParen => "(",
             | SyntaxKind::RightParen => ")",
             | SyntaxKind::LeftBrace => "{",
@@ -473,6 +474,25 @@ mod tests {
             Root => {
                 Rule => {
                     Identifier,
+                    Colon,
+                    Definition => {},
+                    SemiColon,
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rule_param() {
+        test_node! {
+            Root => {
+                Rule => {
+                    Identifier,
+                    Param => {
+                        LeftBracket,
+                        Action,
+                        RightBracket,
+                    },
                     Colon,
                     Definition => {},
                     SemiColon,
@@ -988,6 +1008,11 @@ mod tests {
                 Whitespace,
                 Rule => {
                     Identifier,
+                    Param => {
+                        LeftBracket,
+                        Action,
+                        RightBracket,
+                    },
                     Whitespace,
                     Colon,
                     Definition => {
@@ -1027,6 +1052,11 @@ mod tests {
                 Whitespace,
                 Rule => {
                     Identifier,
+                    Param => {
+                        LeftBracket,
+                        Action,
+                        RightBracket,
+                    },
                     Comment => "/* comment */",
                     Colon,
                     Definition => {
