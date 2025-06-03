@@ -490,7 +490,7 @@ mod tests {
                     Identifier,
                     Param => {
                         LeftBracket,
-                        Action,
+                        Operation,
                         RightBracket,
                     },
                     Colon,
@@ -559,6 +559,29 @@ mod tests {
                     Colon,
                     Definition => {
                         Identifier,
+                    },
+                    SemiColon,
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rule_reference() {
+        test_node! {
+            Root => {
+                Rule => {
+                    Identifier,
+                    Colon,
+                    Definition => {
+                        Reference => {
+                            Identifier,
+                            Param => {
+                                LeftBracket,
+                                Operation,
+                                RightBracket,
+                            },
+                        },
                     },
                     SemiColon,
                 }
@@ -1010,7 +1033,7 @@ mod tests {
                     Identifier,
                     Param => {
                         LeftBracket,
-                        Action,
+                        Operation,
                         RightBracket,
                     },
                     Whitespace,
@@ -1054,7 +1077,7 @@ mod tests {
                     Identifier,
                     Param => {
                         LeftBracket,
-                        Action,
+                        Operation,
                         RightBracket,
                     },
                     Comment => "/* comment */",

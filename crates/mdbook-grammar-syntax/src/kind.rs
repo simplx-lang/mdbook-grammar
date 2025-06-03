@@ -132,6 +132,8 @@ impl SyntaxKind {
             SyntaxKind::Colon
                 | SyntaxKind::SemiColon
                 | SyntaxKind::Arrow
+                | SyntaxKind::LeftBracket
+                | SyntaxKind::RightBracket
                 | SyntaxKind::LeftParen
                 | SyntaxKind::RightParen
                 | SyntaxKind::LeftBrace

@@ -234,7 +234,7 @@ impl Lexer<'_> {
 
         let param = self.s.eat_until(']');
         nodes.push(SyntaxNode::leaf(
-            SyntaxKind::Action,
+            SyntaxKind::Operation,
             param,
             cursor..self.s.cursor(),
         ));
@@ -371,13 +371,20 @@ mod tests {
     fn test_if() {
         test_lexer!(Action, "if hahahaha", "-> 123123;");
         test_lexer!(Action, "if hahahaha", ";");
+        test_lexer!(Action, "if hahahaha", "\n");
         test_lexer!(Action, "if hahahaha");
     }
 
     #[test]
     fn test_arrow() {
         test_lexer!(Action, "-> hahahaha", ";");
+        test_lexer!(Action, "-> hahahaha", "\n");
         test_lexer!(Action, "-> hahahaha");
+    }
+
+    #[test]
+    fn test_param() {
+        test_lexer!(Param, "[param]", "123");
     }
 
     #[test]
