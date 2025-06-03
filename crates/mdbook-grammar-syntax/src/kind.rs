@@ -68,9 +68,9 @@ pub enum SyntaxKind {
     Rule,
     /// the definition of a rule
     Definition,
-    /// the action of a rule
-    Action,
 
+    /// an action expression
+    Action,
     /// a group expression
     Group,
     /// a converse expression

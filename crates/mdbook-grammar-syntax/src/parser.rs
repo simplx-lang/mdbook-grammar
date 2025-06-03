@@ -30,7 +30,6 @@ fn rule(p: &mut Parser<'_>) {
     expression(p);
     p.wrap(marker, SyntaxKind::Definition);
 
-    p.eat_while(SyntaxKind::Action);
     p.expect(SyntaxKind::SemiColon);
     p.hint("consider ending the rule with `;`");
 
@@ -55,7 +54,8 @@ fn item(p: &mut Parser, wrapper: Option<(Marker, SyntaxKind)>) -> bool {
         | SyntaxKind::Meta
         | SyntaxKind::Identifier
         | SyntaxKind::Dot
-        | SyntaxKind::Bar => {},
+        | SyntaxKind::Bar
+        | SyntaxKind::Action => {},
 
         | SyntaxKind::String => {
             if p.eat_if(SyntaxKind::Dots) {
@@ -95,10 +95,7 @@ fn item(p: &mut Parser, wrapper: Option<(Marker, SyntaxKind)>) -> bool {
             p.hint("consider starting a range with `{`");
         },
 
-        | SyntaxKind::RightParen
-        | SyntaxKind::Action
-        | SyntaxKind::End
-        | SyntaxKind::SemiColon => {
+        | SyntaxKind::RightParen | SyntaxKind::End | SyntaxKind::SemiColon => {
             p.uneat();
             return false;
         },
@@ -397,7 +394,7 @@ mod tests {
 
     fn default(kind: SyntaxKind) -> &'static str {
         match kind {
-            | SyntaxKind::Whitespace => " ",
+            | SyntaxKind::Whitespace => "\n",
             | SyntaxKind::Identifier => "identifier",
             | SyntaxKind::String => "\"string\"",
             | SyntaxKind::Integer => "1",
@@ -588,10 +585,11 @@ mod tests {
                 Rule => {
                     Identifier,
                     Colon,
-                    Definition => {},
-                    Action => {
-                        If,
-                        Operation,
+                    Definition => {
+                        Action => {
+                            If,
+                            Operation,
+                        },
                     },
                     SemiColon,
                 }
@@ -606,10 +604,11 @@ mod tests {
                 Rule => {
                     Identifier,
                     Colon,
-                    Definition => {},
-                    Action => {
-                        Arrow,
-                        Operation,
+                    Definition => {
+                        Action => {
+                            Arrow,
+                            Operation,
+                        },
                     },
                     SemiColon,
                 }
@@ -1018,10 +1017,11 @@ mod tests {
                             Whitespace,
                             Dots,
                             String,
-                        }
+                        },
+                        Action => { If, Operation },
+                        Whitespace,
+                        Action => { Arrow, Operation },
                     },
-                    Action => { If, Operation },
-                    Action => { Arrow, Operation },
                     SemiColon,
                 },
                 Whitespace,
@@ -1054,11 +1054,12 @@ mod tests {
                                 },
                                 RightParen,
                             },
+                            Action => { If, Operation },
                             Whitespace,
                             RightParen
                         },
+                        Action => { If, Operation },
                     },
-                    Action => { If, Operation },
                     SemiColon,
                 },
                 Whitespace

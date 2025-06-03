@@ -192,9 +192,13 @@ impl Lexer<'_> {
         let cursor = self.s.cursor();
 
         if kind == SyntaxKind::Arrow {
-            self.s.eat_until(';');
+            self.s.eat_until(|c| c == ';' || is_newline(c));
         } else {
-            while !self.s.done() && !self.s.at(';') && !self.s.at("->") {
+            while !self.s.done()
+                && !self.s.at(';')
+                && !self.s.at("->")
+                && !self.s.at(is_newline)
+            {
                 self.s.eat();
             }
         }
